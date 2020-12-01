@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  server:
+    networks:
+      - api-internal
+    depends_on:
+      - postgres
+    ports:
+      - '3000:3000'
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      PGHOST: postgres
+      PGUSER: postgres
+      PGPASSWORD: denisa
+      PGDATABASE: tema2
+      PGPORT: 5432
+  postgres:
+    networks:
+      - api-internal
+      - db-internal
+    image: postgres:12
+    volumes:
+      - ./db_config/dbinit.sql:/docker-entrypoint-initdb.d/dbinit.sql
+      - postgresdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: tema2
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: denisa
+  pgadmin:
+    logging:
+      driver: none
+    networks:
+      - db-internal
+    container_name: pgadmin
+    image: dpage/pgadmin4:4.28
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ursudenisa@ymail.com
+      PGADMIN_DEFAULT_PASSWORD: denisa
+      PGADMIN_LISTEN_PORT: 80
+    ports:
+      - '8080:80'
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+volumes:
+  postgresdata:
+  pgadmin-data:
+networks:
+  api-internal:
+  db-internal:
