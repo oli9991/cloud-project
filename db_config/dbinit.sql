@@ -1,21 +1,21 @@
 CREATE TABLE IF NOT EXISTS countries (
-    id serial PRIMARY KEY,
-    name_country varchar(15) NOT NULL UNIQUE,
+    id SERIAL UNIQUE PRIMARY KEY,
+    nume varchar(30) NOT NULL UNIQUE,
     lat double precision NOT NULL,
-    long double precision NOT NULL
+    lon double precision NOT NULL
 );
 CREATE TABLE IF NOT EXISTS cities (
-    id serial PRIMARY KEY,
-    id_country int NOT NULL UNIQUE,
-    name_city varchar(15) NOT NULL UNIQUE,
+    id SERIAL UNIQUE PRIMARY KEY,
+    idTara int NOT NULL UNIQUE,
+    nume varchar(30) NOT NULL UNIQUE,
     lat double precision NOT NULL,
-    long double precision NOT NULL,
-    FOREIGN KEY (id_country) REFERENCES countries(id)
+    lon double precision NOT NULL,
+    FOREIGN KEY (idTara) REFERENCES countries(id) ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS temperatures (
-    id serial PRIMARY KEY,
-    value serial NOT NULL,
-    timestamp varchar(15) NOT NULL UNIQUE,
-    id_city int NOT NULL UNIQUE,
-    FOREIGN KEY (id_city) REFERENCES cities(id)
+    id SERIAL UNIQUE PRIMARY KEY,
+    valoare double precision NOT NULL,
+    timestamp_t timestamp NOT NULL UNIQUE,
+    idOras int NOT NULL UNIQUE,
+    FOREIGN KEY (idOras) REFERENCES cities(id) ON DELETE CASCADE
 );
