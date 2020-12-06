@@ -1,0 +1,29 @@
+URSU OLIMPIA DENISA
+
+/************* Informatii generale *****************/
+
+- Tema a fost implementata folosind NodeJs, PostgreSQL si PgAdmin4
+- Pentru testare a fost folosit Postman
+
+/************* Informatii implementare *************/
+
+Structura proiectului a fost impartita in :
+- controlere - unde sunt definite rutele
+- interactiunea cu baza de date - se creaza clientul care va interactiona cu PostgreSQL
+- configurarea bazei de date - un sql prin care sunt create tablele cerute
+- serviciile - metodele pentru fiecare tip de controler (tari, orase, temperaturi)
+- utils - o serie de fisiere care imi fac viata mai usoara 
+    - check-input : metode pentru verificarea inputului 
+    - error-utils : pentru gestionarea erorilor
+    - types-fields : pentru afisarea erorilor de tipul (inputul *field* este null)
+- routes - pentru a imbina cele 3 tipuri de rute (tari, orase, temperaturi)
+
+
+/************* Informatii rute *************/
+
+Fiecare serviciu :
+- presupune minim un query prin care preiau date din baza de date
+- returneaza un obiect format dintr-un mesaj si datele cerute (GET)
+
+Fiecare controler:
+- va returna un status pentru client (HTTP CODE) impreuna cu obiectul primit de la serviciu
