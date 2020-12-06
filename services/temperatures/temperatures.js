@@ -14,8 +14,8 @@ const getAll = async () => {
 const getAllCoords = async (lat, lon, from, until) => {
   const latitude = lat ? lat : null
   const longitude = lon ? lon : null
-  const startDate = from ? from.toString() : ''
-  const endDate = until ? until.toString() : ''
+  const startDate = from ? from : ''
+  const endDate = until ? until : ''
 
   if (latitude && longitude) {
     const {
@@ -43,7 +43,7 @@ const getAllCoords = async (lat, lon, from, until) => {
     const {
       rows
     } = await query(
-      `SELECT t.id, t.valoare, t.timestamp_t as timestamp FROM temperatures t, cities c WHERE (c.lon=$1) AND ((($3='') IS FALSE AND ($4='') IS FALSE AND to_date(cast(t.timestamp_t as TEXT), 'YYYY-MM-DD') >= to_date($3, 'YYYY-MM-DD') AND to_date(cast(t.timestamp_t as TEXT), 'YYYY-MM-DD') <= to_date($4, 'YYYY-MM-DD')) OR (($3='') IS FALSE AND ($4='') IS NOT FALSE AND to_date(cast(t.timestamp_t as TEXT), 'YYYY-MM-DD') >= to_date($3, 'YYYY-MM-DD')) OR (($3='') IS NOT FALSE AND ($4='') IS FALSE AND to_date(cast(t.timestamp_t as TEXT), 'YYYY-MM-DD') <= to_date($4, 'YYYY-MM-DD')) OR (($3='') IS NOT FALSE AND ($4='') IS NOT FALSE)) AND c.id=t.idOras`,
+      `SELECT t.id, t.valoare, t.timestamp_t as timestamp FROM temperatures t, cities c WHERE (c.lon=$1) AND ((($2='') IS FALSE AND ($3='') IS FALSE AND to_date(cast(t.timestamp_t as TEXT), 'YYYY-MM-DD') >= to_date($2, 'YYYY-MM-DD') AND to_date(cast(t.timestamp_t as TEXT), 'YYYY-MM-DD') <= to_date($3, 'YYYY-MM-DD')) OR (($2='') IS FALSE AND ($3='') IS NOT FALSE AND to_date(cast(t.timestamp_t as TEXT), 'YYYY-MM-DD') >= to_date($2, 'YYYY-MM-DD')) OR (($2='') IS NOT FALSE AND ($3='') IS FALSE AND to_date(cast(t.timestamp_t as TEXT), 'YYYY-MM-DD') <= to_date($3, 'YYYY-MM-DD')) OR (($2='') IS NOT FALSE AND ($3='') IS NOT FALSE)) AND c.id=t.idOras`,
       [longitude, startDate, endDate]
     )
     return {
@@ -64,18 +64,32 @@ const getAllCoords = async (lat, lon, from, until) => {
   }
 }
 
-const getAllCountry = async () => {
-  const { rows } = await query(`SELECT * FROM temperatures`, [])
+const getAllCountry = async (from, until, idTara) => {
+  const startDate = from ? from : ''
+  const endDate = until ? until : ''
+  const {
+    rows
+  } = await query(
+    `SELECT t.id, t.valoare, t.timestamp_t FROM temperatures t, cities c WHERE c.idTara=$1 AND c.id=t.idOras AND ((($2='') IS FALSE AND ($3='') IS FALSE AND to_date(cast(t.timestamp_t as TEXT), 'YYYY-MM-DD') >= to_date($2, 'YYYY-MM-DD') AND to_date(cast(t.timestamp_t as TEXT), 'YYYY-MM-DD') <= to_date($3, 'YYYY-MM-DD')) OR (($2='') IS FALSE AND ($3='') IS NOT FALSE AND to_date(cast(t.timestamp_t as TEXT), 'YYYY-MM-DD') >= to_date($2, 'YYYY-MM-DD')) OR (($2='') IS NOT FALSE AND ($3='') IS FALSE AND to_date(cast(t.timestamp_t as TEXT), 'YYYY-MM-DD') <= to_date($3, 'YYYY-MM-DD')) OR (($2='') IS NOT FALSE AND ($3='') IS NOT FALSE))`,
+    [idTara, startDate, endDate]
+  )
   return {
-    message: `All temperatures`,
+    message: `All temperatures from country with conditions`,
     data: rows
   }
 }
 
-const getAllCity = async () => {
-  const { rows } = await query(`SELECT * FROM temperatures`, [])
+const getAllCity = async (from, until, idOras) => {
+  const startDate = from ? from : ''
+  const endDate = until ? until : ''
+  const {
+    rows
+  } = await query(
+    `SELECT t.id, t.valoare, t.timestamp_t FROM temperatures t WHERE t.idOras=$1 AND ((($2='') IS FALSE AND ($3='') IS FALSE AND to_date(cast(t.timestamp_t as TEXT), 'YYYY-MM-DD') >= to_date($2, 'YYYY-MM-DD') AND to_date(cast(t.timestamp_t as TEXT), 'YYYY-MM-DD') <= to_date($3, 'YYYY-MM-DD')) OR (($2='') IS FALSE AND ($3='') IS NOT FALSE AND to_date(cast(t.timestamp_t as TEXT), 'YYYY-MM-DD') >= to_date($2, 'YYYY-MM-DD')) OR (($2='') IS NOT FALSE AND ($3='') IS FALSE AND to_date(cast(t.timestamp_t as TEXT), 'YYYY-MM-DD') <= to_date($3, 'YYYY-MM-DD')) OR (($2='') IS NOT FALSE AND ($3='') IS NOT FALSE))`,
+    [idOras, startDate, endDate]
+  )
   return {
-    message: `All temperatures`,
+    message: `All temperatures from city with conditions`,
     data: rows
   }
 }

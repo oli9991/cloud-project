@@ -22,35 +22,19 @@ Router.get('/', async (req, res, next) => {
   res.status(StatusCodes.OK).json(data)
 })
 
-Router.get('/cities', async (req, res, next) => {
+Router.get('/cities/:idOras', async (req, res, next) => {
   let data
-  const { lat, lon, from, until, idOras, idTara } = req.query
-  if (
-    _.isNull(lat) &&
-    _.isNull(lon) &&
-    _.isNull(from) &&
-    _.isNull(until) &&
-    _.isNull(idOras) &&
-    _.isNull(idTara)
-  ) {
-    data = await TemperaturesServices.getAll()
-  }
+  const { from, until } = req.query
+  const { idOras } = req.params
+  data = await TemperaturesServices.getAllCity(from, until, idOras)
   res.status(StatusCodes.OK).json(data)
 })
 
-Router.get('/countries', async (req, res, next) => {
+Router.get('/countries/:idTara', async (req, res, next) => {
   let data
-  const { lat, lon, from, until, idOras, idTara } = req.query
-  if (
-    _.isNull(lat) &&
-    _.isNull(lon) &&
-    _.isNull(from) &&
-    _.isNull(until) &&
-    _.isNull(idOras) &&
-    _.isNull(idTara)
-  ) {
-    data = await TemperaturesServices.getAll()
-  }
+  const { from, until } = req.query
+  const { idTara } = req.params
+  data = await TemperaturesServices.getAllCountry(from, until, idTara)
   res.status(StatusCodes.OK).json(data)
 })
 
