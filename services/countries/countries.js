@@ -10,10 +10,7 @@ const { FIELDS_COUNTRY } = require('../../utils/types-fields')
 
 const getAll = async () => {
   const { rows } = await query(`SELECT * FROM countries`, [])
-  return {
-    message: `All countries with all the information`,
-    data: rows
-  }
+  return rows
 }
 
 const addCountry = async (nume, lat, long) => {
@@ -41,10 +38,7 @@ const addCountry = async (nume, lat, long) => {
       [nume, lat, long]
     )
 
-    return {
-      message: `The country was successfully added`,
-      data: { id: response.rows[0].id }
-    }
+    return { id: response.rows[0].id }
   }
 }
 
@@ -84,9 +78,6 @@ const updateCountry = async (idBody, id, nume, lat, long) => {
       long,
       idBody
     ])
-    return {
-      message: `Country updated`
-    }
   }
 }
 
@@ -98,9 +89,6 @@ const deleteCountry = async id => {
   } else {
     /* if country is in database */
     await query(`DELETE FROM countries WHERE id=$1`, [+id])
-    return {
-      message: `Country deleted`
-    }
   }
 }
 

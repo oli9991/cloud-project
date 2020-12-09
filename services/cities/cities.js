@@ -10,29 +10,16 @@ const { FIELDS_CITY } = require('../../utils/types-fields')
 
 const getAll = async () => {
   const { rows } = await query(`SELECT * FROM cities`, [])
-  return {
-    message: `All cities with all the information`,
-    data: rows
-  }
+  return rows
 }
 
 const getAllCities = async idTara => {
-  /* check if country exists */
-  //   const { rows } = await query(`SELECT * FROM countries WHERE id=$1`, [idTara])
-
-  //   if (rows.length === 0) {
-  //     throw new ServerError('This country does not exist', 404)
-  //   } else {
   const {
     rows
   } = await query(`SELECT id, nume, lat, lon FROM cities WHERE idTara=$1`, [
     +idTara
   ])
-  return {
-    message: `All cities from country with id ${idTara}`,
-    data: rows
-    // }
-  }
+  return rows
 }
 
 const addCity = async (idTara, nume, lat, long) => {
@@ -71,10 +58,7 @@ const addCity = async (idTara, nume, lat, long) => {
         [nume, lat, long, idTara]
       )
 
-      return {
-        message: `The city was successfully added`,
-        data: { id: response.rows[0].id }
-      }
+      return { id: response.rows[0].id }
     }
   } else {
     throw new ServerError('This country does not exist', 404)
@@ -122,9 +106,6 @@ const updateCity = async (idBody, id, idTara, nume, lat, long) => {
         `UPDATE cities SET idTara=$1, nume=$2, lat=$3, lon=$4 WHERE id=$5`,
         [idTara, nume, lat, long, idBody]
       )
-      return {
-        message: `City updated`
-      }
     }
   } else {
     throw new ServerError('This country does not exist', 404)
@@ -139,9 +120,6 @@ const deleteCity = async id => {
   } else {
     /* if city is in database */
     await query(`DELETE FROM cities WHERE id=$1`, [+id])
-    return {
-      message: `City deleted`
-    }
   }
 }
 

@@ -17,7 +17,9 @@ const FIELDS_TEMPERATURE = {
   ID: 'id',
   ID_CITY: 'id city',
   VALUE: 'value',
-  TIMESTAMP: 'timestamp'
+  TIMESTAMP: 'timestamp',
+  UNTIL: 'until',
+  FROM: 'from'
 }
 
 module.exports = {
