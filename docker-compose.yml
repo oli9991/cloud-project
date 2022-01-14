@@ -17,7 +17,7 @@ services:
       PGHOST: postgres
       PGUSER: postgres
       PGPASSWORD: denisa
-      PGDATABASE: tema2
+      PGDATABASE: cloud
       PGPORT: 5432
   postgres:
     networks:
@@ -28,7 +28,7 @@ services:
       - ./db_config/dbinit.sql:/docker-entrypoint-initdb.d/dbinit.sql
       - postgresdata:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: tema2
+      POSTGRES_DB: cloud
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: denisa
   pgadmin:
@@ -37,7 +37,7 @@ services:
     networks:
       - db-internal
     container_name: pgadmin
-    image: dpage/pgadmin4:4.28
+    image: dpage/pgadmin4:6.4
     environment:
       PGADMIN_DEFAULT_EMAIL: ursudenisa@ymail.com
       PGADMIN_DEFAULT_PASSWORD: denisa

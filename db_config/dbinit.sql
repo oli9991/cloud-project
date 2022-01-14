@@ -1,23 +1,19 @@
-CREATE TABLE IF NOT EXISTS countries (
+CREATE TABLE IF NOT EXISTS doctors (
     id SERIAL UNIQUE PRIMARY KEY,
-    nume varchar(30) NOT NULL UNIQUE,
-    lat double precision NOT NULL,
-    lon double precision NOT NULL
+    first_name varchar(30) NOT NULL UNIQUE,
+    last_name varchar(30) NOT NULL UNIQUE,
+    specialization varchar(30) NOT NULL UNIQUE
 );
-CREATE TABLE IF NOT EXISTS cities (
+CREATE TABLE IF NOT EXISTS services (
     id SERIAL UNIQUE PRIMARY KEY,
-    idTara int NOT NULL,
-    nume varchar(30) NOT NULL,
-    lat double precision NOT NULL,
-    lon double precision NOT NULL,
-    FOREIGN KEY (idTara) REFERENCES countries(id) ON DELETE CASCADE,
-    CONSTRAINT idTara_nume UNIQUE (idTara, nume)
+    service_name varchar(30) NOT NULL UNIQUE,
+    description varchar(30) NOT NULL UNIQUE,
+    price integer NOT NULL UNIQUE,
+    FOREIGN KEY (doctor_id) REFERENCES doctors(id) ON DELETE CASCADE
 );
-CREATE TABLE IF NOT EXISTS temperatures (
+CREATE TABLE IF NOT EXISTS appointments (
     id SERIAL UNIQUE PRIMARY KEY,
-    valoare double precision NOT NULL,
-    timestamp_t timestamp NOT NULL,
-    idOras int NOT NULL,
-    FOREIGN KEY (idOras) REFERENCES cities(id) ON DELETE CASCADE,
-    CONSTRAINT idOras_time UNIQUE (idOras, timestamp_t)
+    full_name varchar(30) NOT NULL UNIQUE,
+    time_interval varchar(30) NOT NULL,
+    FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE CASCADE
 );
