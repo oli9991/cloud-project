@@ -17,7 +17,7 @@ services:
       PGHOST: postgres
       PGUSER: postgres
       PGPASSWORD: denisa
-      PGDATABASE: cloud
+      PGDATABASE: cloud-project
       PGPORT: 5432
   postgres:
     networks:
@@ -28,7 +28,7 @@ services:
       - ./db_config/dbinit.sql:/docker-entrypoint-initdb.d/dbinit.sql
       - postgresdata:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: cloud
+      POSTGRES_DB: cloud-project
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: denisa
   pgadmin:

@@ -7,20 +7,13 @@ const getAll = async () => {
 }
 
 const addDoctor = async (first_name, last_name, specialization) => {
-  /* check if country is already in database */
-  const { rows } = await query(`SELECT * FROM doctors WHERE nume=$1`, [nume])
+  /* if country is not in database */
+  const response = await query(
+    `INSERT INTO doctors (first_name, last_name, specialization) VALUES ($1, $2, $3) RETURNING id`,
+    [first_name, last_name, specialization]
+  )
 
-  if (rows && rows.length > 0) {
-    throw new ServerError('This doctor is already in the database', 409)
-  } else {
-    /* if country is not in database */
-    const response = await query(
-      `INSERT INTO doctors (first_name, last_name, specialization) VALUES ($1, $2, $3) RETURNING id`,
-      [first_name, last_name, specialization]
-    )
-
-    return { id: response.rows[0].id }
-  }
+  return { id: response.rows[0].id }
 }
 
 const updateDoctor = async (

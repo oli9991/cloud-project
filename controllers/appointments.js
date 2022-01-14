@@ -1,6 +1,6 @@
 const Router = require('express').Router()
 const HTTP_STATUS = require('http-status-codes')
-const AppointmentService = require('../services/temperatures/index.js')
+const AppointmentService = require('../services/appointments/index.js')
 const { StatusCodes } = HTTP_STATUS
 const _ = require('underscore')
 
