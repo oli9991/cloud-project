@@ -1,16 +1,24 @@
-version: '3.8'
+version: "3.8"
 
 services:
   server:
+    image: olimpiad/server:v1
     networks:
       - api-internal
     depends_on:
       - postgres
     ports:
-      - '3000:3000'
-    build:
-      context: .
-      dockerfile: Dockerfile
+      - "3000:3000"
+    deploy:
+      replicas: 1
+      placement:
+        max_replicas_per_node: 1
+      update_config:
+        parallelism: 1
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        order: stop-first
     environment:
       NODE_ENV: development
       PORT: 3000
@@ -31,26 +39,16 @@ services:
       POSTGRES_DB: cloud-project
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: denisa
-  pgadmin:
-    logging:
-      driver: none
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
     networks:
       - db-internal
-    container_name: pgadmin
-    image: dpage/pgadmin4:6.4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ursudenisa@ymail.com
-      PGADMIN_DEFAULT_PASSWORD: denisa
-      PGADMIN_LISTEN_PORT: 80
-    ports:
-      - '8080:80'
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
     depends_on:
       - postgres
 volumes:
   postgresdata:
-  pgadmin-data:
 networks:
   api-internal:
   db-internal:
