@@ -1,12 +1,5 @@
 const { query } = require('../../database_interaction/db.js')
 const { ServerError } = require('../../utils/error-utils')
-const {
-  checkDouble,
-  checkNull,
-  checkString,
-  checkInt
-} = require('../../utils/check-input')
-const { FIELDS_CITY } = require('../../utils/types-fields')
 
 const getAll = async () => {
   const { rows } = await query(`SELECT * FROM services`, [])
@@ -17,23 +10,12 @@ const addService = async (service_name, description, price, doctor_id) => {
   /* check if country is in database */
   const { rows } = await query(`SELECT * FROM doctors WHERE id=$1`, [doctor_id])
   if (rows.length > 0) {
-    /* check if services exists */
-    const { rows } = await query(
-      `SELECT * FROM services WHERE doctor_id=$1 and service_name=$2 `,
-      [doctor_id, service_name]
+    /* if city is not in database */
+    const response = await query(
+      `INSERT INTO services (service_name, description, price, doctor_id) VALUES ($1, $2, $3, $4) RETURNING id`,
+      [service_name, description, price, doctor_id]
     )
-
-    if (rows && rows.length > 0) {
-      throw new ServerError('This service is already in the database', 409)
-    } else {
-      /* if city is not in database */
-      const response = await query(
-        `INSERT INTO services (service_name, description, price, doctor_id) VALUES ($1, $2, $3, $4) RETURNING id`,
-        [service_name, description, price, doctor_id]
-      )
-
-      return { id: response.rows[0].id }
-    }
+    return { id: response.rows[0].id }
   } else {
     throw new ServerError('This doctor does not exist', 404)
   }

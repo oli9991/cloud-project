@@ -3,7 +3,7 @@ const { ServerError } = require('../../utils/error-utils')
 
 const getAll = async () => {
   const { rows } = await query(
-    `SELECT a.full_name, a.time_interval, s.service_name, s.description, s.price, d.first_name as doctor_firstname, d.lastname as doctor_lastname FROM appointments a, services s, doctors d WHERE a.service_id=s.id AND s.doctor_id=d.id`,
+    `SELECT a.full_name, a.time_interval as appointment_date, s.service_name, s.description as service_description, s.price as service_price, d.first_name || ' ' || d.last_name as doctor_name FROM appointments a, services s, doctors d WHERE a.service_id=s.id AND s.doctor_id=d.id`,
     []
   )
   return rows

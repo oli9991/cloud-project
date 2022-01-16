@@ -1,0 +1,123 @@
+version: "3.8"
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.9-management
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    # networks:
+    # - rabbitmq_go_net
+  server:
+    build: ./api
+    networks:
+      - api-internal
+    depends_on:
+      - postgres
+    ports:
+      - "3000:3000"
+    deploy:
+      replicas: 1
+      placement:
+        max_replicas_per_node: 1
+      update_config:
+        parallelism: 1
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        order: stop-first
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      PGHOST: postgres
+      PGUSER: postgres
+      PGPASSWORD: denisa
+      PGDATABASE: cloud-project
+      PGPORT: 5432
+  postgres:
+    networks:
+      - api-internal
+      - db-internal
+    image: postgres:12
+    volumes:
+      - ./db_config/dbinit.sql:/docker-entrypoint-initdb.d/dbinit.sql
+      - postgresdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: cloud-project
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: denisa
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
+    networks:
+      - db-internal
+    depends_on:
+      - postgres
+  agent:
+    image: portainer/agent
+    environment:
+      # REQUIRED: Should be equal to the service name prefixed by "tasks." when
+      # deployed inside an overlay network
+      AGENT_CLUSTER_ADDR: tasks.agent
+      # AGENT_PORT: 9001
+      # LOG_LEVEL: debug
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/volumes:/var/lib/docker/volumes
+    networks:
+      - agent_network
+    deploy:
+      mode: global
+      placement:
+        constraints: [node.platform.os == linux]
+
+  portainer:
+    image: portainer/portainer
+    command: -H tcp://tasks.agent:9001 --tlsskipverify
+    ports:
+      - "9000:9000"
+      - "8000:8000"
+    volumes:
+      - portainer_data:/data
+    networks:
+      - agent_network
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+  # rabbitmq:
+  #   image: rabbitmq:3.9-management
+  #   ports:
+  #     - 5672:5672
+  #     - 15672:15672
+  #   volumes:
+  #     - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+  #     - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+  # networks:
+  # - rabbitmq_go_net
+  # procesator:
+  #   build: "./procesator"
+  #   environment:
+  #     PORT: 8001
+  #     PGHOST: db
+  #     PGDATABASE: cloud-project
+  #     PGPORT: 5432
+  #     PGUSER: postgres
+  #     PGPASSWORD: denisa
+  #     AMQPURL: amqp://localhost
+  #   # restart: on-failure
+  #   networks:
+  #     - db-internal
+volumes:
+  postgresdata:
+  portainer_data:
+networks:
+  api-internal:
+  db-internal:
+  agent_network:
+    driver: overlay

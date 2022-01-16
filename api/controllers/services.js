@@ -10,6 +10,7 @@ Router.get('/', async (req, res, next) => {
 
 Router.post('/', async (req, res, next) => {
   const { service_name, description, price, doctor_id } = req.body
+  console.log(service_name, description, price, doctor_id)
   const data = await ServicesService.addService(
     service_name,
     description,
