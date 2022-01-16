@@ -29,7 +29,7 @@ const connectToBroker = () => {
       const ch = await conn.createChannel();
       const eventQueue = await ch.assertQueue(QUEUE, { durable: true });
       
-      await ch.consume(eventQueue.queue, handleEvent, { noAck: false });
+      await ch.consume(eventQueue.queue, handleEvent(ch), { noAck: false });
 
       console.log("Broker connection and subscriptions are established!");
     }).catch(ex => {
@@ -41,26 +41,28 @@ const connectToBroker = () => {
     });
 };
 
-const handleEvent = async (msg) => {
-  console.log(" [x] Received %s", msg.content.toString());
+const handleEvent = async (channel) => {
+  return async (msg) => {
+    console.log(" [x] Received %s", msg.content.toString());
 
-  if (msg !== null) {
-    const jsonPayload = JSON.parse(msg.content);
-    try {
-      await ExecuteQuery(
-        "INSERT INTO appoinments (full_name, time_interval, service_id) VALUES ($1, $2, $3)",
-        [
-          jsonPayload.full_name,
-          jsonPayload.time_interval,
-          jsonPayload.service_id,
-        ]
-      );
-    } catch (err) {
-      console.error(err);
+    if (msg !== null) {
+      const jsonPayload = JSON.parse(msg.content);
+      try {
+        await ExecuteQuery(
+          "INSERT INTO appoinments (full_name, time_interval, service_id) VALUES ($1, $2, $3)",
+          [
+            jsonPayload.full_name,
+            jsonPayload.time_interval,
+            jsonPayload.service_id,
+          ]
+        );
+      } catch (err) {
+        console.error(err);
+      }
     }
-  }
 
-  channel.ack(msg);
+    channel.ack(msg);
+  }
 }
 
 connectToBroker();
