@@ -2,16 +2,24 @@ var amqp = require('amqplib')
 
 let Channel = null
 
-amqp
-  .connect('amqp://localhost')
-  .then(conn => {
-    return conn.createChannel()
-  })
-  .then(channel => (Channel = channel))
-  .catch(err => {
-    console.error(err)
-    process.exit(-1)
-  })
+const init = async () => {
+  while (true) {
+    try {
+      const connection = await amqp.connect(
+        process.env.NODE_ENV === "development"
+        ? "amqp://localhost"
+        : process.env.AMQPURL
+      );
+      Channel = await connection.createChannel();
+      break;
+    }
+    catch (err) {
+      console.log(err);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  }
+}
+init()
 
 const PublishMessageAsync = async (queue, payload) => {
   await Channel.assertQueue(queue, {

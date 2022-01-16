@@ -13,12 +13,8 @@ Router.get('/', async (req, res, next) => {
 Router.post('/', async (req, res, next) => {
   const { full_name, service_id, time_interval } = req.body
   HandleAsync({ full_name, service_id, time_interval })
-  // const data = await AppointmentService.addAppointment(
-  //   full_name,
-  //   time_interval,
-  //   service_id
-  // )
-  // res.status(StatusCodes.CREATED).json(data)
+
+  res.status(StatusCodes.CREATED).json({message: 'Ok'})
 })
 
 Router.put('/:id', async (req, res, next) => {
